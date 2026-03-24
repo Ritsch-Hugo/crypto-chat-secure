@@ -4,15 +4,23 @@ public class ServerInterceptor {
     }
 
     public String onMessageRelay(String message, int fromClient, int toClient) {
-        String clear = rot13(message);
+    System.out.println("[MITM] Intercepted message from client " + fromClient +
+            " to client " + toClient);
+    System.out.println("[MITM] Original ciphertext: " + message);
 
-        System.out.println("[MITM] Intercepted message from client " + fromClient +
-                " to client " + toClient);
-        System.out.println("[MITM] Ciphertext seen by server: " + message);
-        System.out.println("[MITM] Decrypted cleartext: " + clear);
+    // Attaque : on modifie le message
+    char[] chars = message.toCharArray();
 
-        return message; // on relaie sans modifier
+    if (chars.length > 5) {
+        chars[5] = chars[5] == 'A' ? 'B' : 'A'; // flip un caractère
     }
+
+    String modified = new String(chars);
+
+    System.out.println("[MITM] Modified ciphertext: " + modified);
+
+    return modified;
+}
 
     private String rot13(String text) {
         StringBuilder result = new StringBuilder();

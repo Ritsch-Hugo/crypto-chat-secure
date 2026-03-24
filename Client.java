@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-
 public class Client {
     private static final String SERVER_HOST = "localhost";
     private static final int SERVER_PORT = 8888;
@@ -13,14 +12,21 @@ public class Client {
     private Interceptor interceptor;
     private volatile boolean running;
 
-    public Client() {
-        this.interceptor = new Interceptor();
+    public Client(String password) {
+        this.interceptor = new Interceptor(password);
         this.running = true;
     }
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: java Client <password>");
+            return;
+        }
+
+        String password = args[0];
+
         System.out.println("Starting client ...");
-        Client client = new Client();
+        Client client = new Client(password);
         client.start();
     }
 
@@ -35,7 +41,6 @@ public class Client {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
-            // Wait for server's READY signal (sent when both clients are connected)
             System.out.println("Waiting for other client to connect...");
             String readySignal = input.readLine();
             if (!"READY".equals(readySignal)) {
